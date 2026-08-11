@@ -10,3 +10,5 @@ REST API сервис для загрузки, обработки и анали�
 2. Выполните команду сборки и запуска:
    ```bash
    docker-compose up -d --build
+
+3. Доступ по адресу http://localhost:7035/swagger
