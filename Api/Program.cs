@@ -13,6 +13,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<IValidator<CsvRowDto>, CsvRowValidator>();
 builder.Services.AddScoped<IFileProcessingService, FileProcessingService>();
+builder.Services.AddScoped<IFileQueryService, FileQueryService>();
 
 builder.Services.AddControllers();
 

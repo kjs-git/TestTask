@@ -1,4 +1,5 @@
-﻿using Application.Services;
+﻿using Application.Models;
+using Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -8,10 +9,14 @@ namespace Api.Controllers
     public class FilesController : ControllerBase
     {
         private readonly IFileProcessingService _fileProcessingService;
+        private readonly IFileQueryService _fileQueryService;
 
-        public FilesController(IFileProcessingService fileProcessingService)
+        public FilesController(
+            IFileProcessingService fileProcessingService,
+            IFileQueryService fileQueryService)
         {
             _fileProcessingService = fileProcessingService;
+            _fileQueryService = fileQueryService;
         }
 
         [HttpPost("upload")]
@@ -34,6 +39,27 @@ namespace Api.Controllers
                 var errorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                 return BadRequest(new { Error = errorMessage });
             }
+        }
+
+        [HttpGet("results")]
+        public async Task<IActionResult> GetResults([FromQuery] ResultFilterDto filter)
+        {
+            var results = await _fileQueryService.GetResultsAsync(filter);
+            return Ok(results);
+        }
+
+        [HttpGet("{fileName}/values")]
+        public async Task<IActionResult> GetLastValues(string fileName)
+        {
+            if (string.IsNullOrWhiteSpace(fileName))
+                return BadRequest("Имя файла не может быть пустым.");
+
+            var values = await _fileQueryService.GetLastValuesAsync(fileName);
+
+            if (!values.Any())
+                return NotFound($"Данные для файла '{fileName}' не найдены.");
+
+            return Ok(values);
         }
     }
 }
